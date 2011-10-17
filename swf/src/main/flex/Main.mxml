@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                layout="absolute"
+                applicationComplete="initApp(event)">
+
+  <mx:Script>
+  <![CDATA[
+
+    private var xmlsock:XMLSocket;
+    private var userKey:String;
+    private var outParam:String;
+
+    private function initApp(event:Event):void {
+      userKey = this.loaderInfo.parameters["userKey"];
+      outParam = this.loaderInfo.parameters["outParam"];
+      xmlsock = new XMLSocket();
+      xmlsock.connect("127.0.0.1", 8099);
+      xmlsock.addEventListener(DataEvent.DATA, onData);
+      xmlsock.addEventListener(Event.CONNECT,onConnect);
+    }
+
+    private function onConnect(event:Event):void{
+      xmlsock.send(new XML("<session>"+userKey+"</session>"));
+    }
+
+
+    private function onData(event:DataEvent):void {
+      var data:String = event.data;
+      var result:uint = ExternalInterface.call("unreadMessages", data, outParam);
+    }
+
+    ]]>
+  </mx:Script>
+
+</mx:Application>
